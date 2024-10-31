@@ -1,9 +1,9 @@
-# BookStore-Management-System
--Check Project
+# Check Project
 
-My assignments are there here is only the overview of the program
 
-UI Design Overview
+# My assignments are there here is only the overview of the program
+
+# UI Design Overview
 
     User View
 
@@ -47,7 +47,7 @@ UI Design Overview
 
     User Management List of all users and librarians with options to Edit, Delete. Option to assign roles (user, librarian) to any account.
 
-Notes on Implementation
+# Notes on Implementation
 
 Design Principles: Keep the UI intuitive and user-friendly. Use clear labels and group related functionalities together. Consider a responsive design for different devices.
 
