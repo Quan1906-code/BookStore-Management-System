@@ -1,9 +1,9 @@
 # Check Project
 
 
-# My assignments are there here is only the overview of the program
+- My assignments are there here is only the overview of the program
 
-# UI Design Overview
+- UI Design Overview
 
     User View
 
