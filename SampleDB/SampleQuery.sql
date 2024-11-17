@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS Customer;
 DROP TABLE IF EXISTS [User];
 
 |-- Create User Table (Admin and Staff)
+-- Recreate tables after dropping them
 CREATE TABLE [User] (
     user_id INT IDENTITY(1,1) PRIMARY KEY,
     username NVARCHAR(50) UNIQUE NOT NULL,
@@ -25,7 +26,6 @@ CREATE TABLE [User] (
     updated_at DATETIME DEFAULT GETDATE()
 );
 
--- Create Customer Table
 CREATE TABLE Customer (
     customer_id INT IDENTITY(1,1) PRIMARY KEY,
     user_id INT UNIQUE, -- Foreign key to User
@@ -39,7 +39,6 @@ CREATE TABLE Customer (
     FOREIGN KEY (user_id) REFERENCES [User](user_id) ON DELETE SET NULL
 );
 
--- Create Book Table
 CREATE TABLE Book (
     ISBN NVARCHAR(14) PRIMARY KEY,
     title NVARCHAR(255) NOT NULL,
@@ -53,7 +52,6 @@ CREATE TABLE Book (
     updated_at DATETIME DEFAULT GETDATE()
 );
 
--- Create Order Table
 CREATE TABLE [Order] (
     order_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -62,24 +60,22 @@ CREATE TABLE [Order] (
     status NVARCHAR(20) DEFAULT 'Pending',
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE NO ACTION
 );
 
--- Create OrderItem Table
 CREATE TABLE OrderItem (
     order_item_id INT IDENTITY(1,1) PRIMARY KEY,
     order_id INT NOT NULL,
     ISBN NVARCHAR(14) NOT NULL,
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    status NVARCHAR(20) DEFAULT 'Pending',  -- Set default status
+    status NVARCHAR(20) DEFAULT 'Pending',
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (order_id) REFERENCES [Order](order_id) ON DELETE CASCADE,
-    FOREIGN KEY (ISBN) REFERENCES Book(ISBN) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES [Order](order_id) ON DELETE NO ACTION,
+    FOREIGN KEY (ISBN) REFERENCES Book(ISBN) ON DELETE NO ACTION
 );
 
--- Create Payment Table
 CREATE TABLE Payment (
     payment_id INT IDENTITY(1,1) PRIMARY KEY,
     order_id INT NOT NULL,
@@ -88,10 +84,9 @@ CREATE TABLE Payment (
     status NVARCHAR(20) DEFAULT 'Pending',
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (order_id) REFERENCES [Order](order_id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES [Order](order_id) ON DELETE NO ACTION
 );
 
--- Create LoyaltyProgram Table
 CREATE TABLE LoyaltyProgram (
     loyalty_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -100,10 +95,9 @@ CREATE TABLE LoyaltyProgram (
     reward_eligible BIT DEFAULT 0 CHECK (reward_eligible IN (0, 1)),
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE NO ACTION
 );
 
--- Create Reviews Table
 CREATE TABLE Reviews (
     review_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_id INT NOT NULL,
@@ -111,48 +105,43 @@ CREATE TABLE Reviews (
     rating INT CHECK (rating >= 1 AND rating <= 5),
     comment NVARCHAR(MAX),
     created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
-    FOREIGN KEY (ISBN) REFERENCES Book(ISBN)
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE NO ACTION,
+    FOREIGN KEY (ISBN) REFERENCES Book(ISBN) ON DELETE NO ACTION
 );
 
--- Create Promotions Table
 CREATE TABLE Promotions (
-    promo_id INT IDENTITY(1,1) PRIMARY KEY,
+    promotion_id INT IDENTITY(1,1) PRIMARY KEY,
+    code NVARCHAR(50) NOT NULL,
     description NVARCHAR(255),
-    discount_percentage DECIMAL(5, 2),
+    discount_percentage INT CHECK (discount_percentage BETWEEN 0 AND 100),
     start_date DATETIME,
     end_date DATETIME,
-    status NVARCHAR(20) DEFAULT 'Active'  -- Optional: track promotion status
+    created_at DATETIME DEFAULT GETDATE(),
+    updated_at DATETIME DEFAULT GETDATE()
 );
 
--- Create ShoppingCart Table
 CREATE TABLE ShoppingCart (
     cart_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_id INT NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE NO ACTION
 );
 
--- Create CartItems Table
 CREATE TABLE CartItems (
     cart_item_id INT IDENTITY(1,1) PRIMARY KEY,
     cart_id INT NOT NULL,
     ISBN NVARCHAR(14) NOT NULL,
     quantity INT NOT NULL,
-    created_at DATETIME DEFAULT GETDATE(),
-    updated_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (cart_id) REFERENCES ShoppingCart(cart_id) ON DELETE CASCADE,
-    FOREIGN KEY (ISBN) REFERENCES Book(ISBN)
+    added_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (cart_id) REFERENCES ShoppingCart(cart_id) ON DELETE NO ACTION,
+    FOREIGN KEY (ISBN) REFERENCES Book(ISBN) ON DELETE NO ACTION
 );
 
--- Create Notifications Table
 CREATE TABLE Notifications (
     notification_id INT IDENTITY(1,1) PRIMARY KEY,
     customer_id INT NOT NULL,
-    message NVARCHAR(MAX),
-    is_read BIT DEFAULT 0,
-    created_at DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE CASCADE
+    message NVARCHAR(MAX) NOT NULL,
+    notification_date DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (customer_id) REFERENCES Customer(customer_id) ON DELETE NO ACTION
 );
-
