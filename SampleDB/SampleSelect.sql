@@ -1,14 +1,10 @@
 USE OnlineBookstore;
 
--- Declare variables
-DECLARE @order_id INT;
-DECLARE @ISBN NVARCHAR(14);
-DECLARE @customer_id INT;
+-- Select queries using declared variables
 
--- Set values for the variables (example values)
-SET @order_id = 1;  -- Set this to the actual order_id you want to query
-SET @ISBN = '978-1234567890';  -- Set this to the actual ISBN you want to query
-SET @customer_id = 1;  -- Set this to the actual customer_id you want to query
+DECLARE @order_id INT = 1;   -- Example value
+DECLARE @ISBN NVARCHAR(14) = '978-1234567890';  -- Example value
+DECLARE @customer_id INT = 1;  -- Example value
 
 -- Select all users
 SELECT user_id, username, role, created_at 
@@ -43,7 +39,7 @@ FROM Reviews r
 WHERE r.ISBN = @ISBN;  -- Using the declared variable
 
 -- Select all promotions
-SELECT promo_id, description, discount_percentage, start_date, end_date 
+SELECT promotion_id, description, discount_percentage, start_date, end_date 
 FROM Promotions;
 
 -- Select all items in a customer's shopping cart
@@ -53,6 +49,6 @@ JOIN ShoppingCart sc ON ci.cart_id = sc.cart_id
 WHERE sc.customer_id = @customer_id;  -- Using the declared variable
 
 -- Select all notifications for a specific customer
-SELECT notification_id, message, is_read, created_at 
+SELECT notification_id, message, notification_date
 FROM Notifications
 WHERE customer_id = @customer_id;  -- Using the declared variable
